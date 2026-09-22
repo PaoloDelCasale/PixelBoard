@@ -25,7 +25,6 @@ public final class GboardAdvancedVoice1803StockPolicy {
                     ENABLE_ADVANCED_FEATURES_FLAG,
                     ENABLE_DICTATION_SPLIT_INSTALL_FLAG,
                     HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG,
-                    ENABLE_STICKY_MIC_BACKGROUND_FLAG,
                     ENABLE_SODA_LONGFORM_EXPERIMENT_FLAG)));
 
     private GboardAdvancedVoice1803StockPolicy() {
