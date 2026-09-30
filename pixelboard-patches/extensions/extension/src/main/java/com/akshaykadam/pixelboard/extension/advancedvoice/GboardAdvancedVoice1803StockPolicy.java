@@ -21,12 +21,15 @@ public final class GboardAdvancedVoice1803StockPolicy {
     public static final String ENABLE_SODA_LONGFORM_EXPERIMENT_FLAG =
             "enable_soda_longform_experiment";
 
+    // HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG and ENABLE_STICKY_MIC_BACKGROUND_FLAG are deliberately
+    // not forced. Forcing handle_fallback_inside_sd_stack keeps the keyboard connected when
+    // dictation is not eligible (e.g. a language model that cannot be silently downloaded) and
+    // disables restorePrimary, so the eligibility/download check is retried without backoff.
     private static final Set<String> STOCK_FLAGS = Collections.unmodifiableSet(
             new HashSet<String>(Arrays.asList(
                     ENABLE_NGA_FLAG,
                     ENABLE_ADVANCED_FEATURES_FLAG,
                     ENABLE_DICTATION_SPLIT_INSTALL_FLAG,
-                    HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG,
                     IMMEDIATELY_END_DICTATION_ON_KEYBOARD_HIDDEN_FLAG,
                     ENABLE_SODA_LONGFORM_EXPERIMENT_FLAG)));
 

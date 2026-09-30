@@ -46,7 +46,6 @@ public final class GboardAdvancedVoice1803Policy {
         return ENABLE_NGA_FLAG.equals(flagName)
                 || ENABLE_ADVANCED_FEATURES_FLAG.equals(flagName)
                 || ENABLE_DICTATION_SPLIT_INSTALL_FLAG.equals(flagName)
-                || HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG.equals(flagName)
                 || IMMEDIATELY_END_DICTATION_ON_KEYBOARD_HIDDEN_FLAG.equals(flagName)
                 || ENABLE_SODA_LONGFORM_EXPERIMENT_FLAG.equals(flagName);
     }
