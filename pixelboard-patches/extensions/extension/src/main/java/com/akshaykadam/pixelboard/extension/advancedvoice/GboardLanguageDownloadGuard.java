@@ -44,12 +44,17 @@ public final class GboardLanguageDownloadGuard {
             return false;
         }
         String key = languageTag + '|' + source;
-        Long previous = LAST_ALLOWED_MS.get(key);
-        if (previous != null && nowMs - previous.longValue() < MIN_REPEAT_INTERVAL_MS) {
+        Long now = Long.valueOf(nowMs);
+        // Atomic: of several concurrent identical requests exactly one is let through.
+        Long previous = LAST_ALLOWED_MS.putIfAbsent(key, now);
+        if (previous == null) {
+            return false;
+        }
+        if (nowMs - previous.longValue() < MIN_REPEAT_INTERVAL_MS) {
             return true;
         }
-        LAST_ALLOWED_MS.put(key, Long.valueOf(nowMs));
-        return false;
+        // The window has elapsed: the thread that wins the swap opens the next window.
+        return !LAST_ALLOWED_MS.replace(key, previous, now);
     }
 
     /** Logs the first few decisions, then every 100th suppression. Never throws. */

@@ -5,6 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class GboardLanguageDownloadGuardTest {
     private static final long INTERVAL = GboardLanguageDownloadGuard.MIN_REPEAT_INTERVAL_MS;
 
@@ -72,5 +75,71 @@ public final class GboardLanguageDownloadGuardTest {
         Assert.assertTrue(GboardLanguageDownloadGuard.shouldLogSuppression(100));
         Assert.assertFalse(GboardLanguageDownloadGuard.shouldLogSuppression(101));
         Assert.assertTrue(GboardLanguageDownloadGuard.shouldLogSuppression(1000));
+    }
+
+    @Test
+    public void concurrentIdenticalRequestsLetExactlyOneThrough() throws Exception {
+        final int threads = 16;
+        for (int round = 0; round < 200; round++) {
+            GboardLanguageDownloadGuard.resetForTest();
+            final AtomicInteger allowed = new AtomicInteger();
+            final CountDownLatch ready = new CountDownLatch(threads);
+            final CountDownLatch go = new CountDownLatch(1);
+            final CountDownLatch done = new CountDownLatch(threads);
+            for (int i = 0; i < threads; i++) {
+                new Thread(new Runnable() {
+                    @Override public void run() {
+                        ready.countDown();
+                        try {
+                            go.await();
+                        } catch (InterruptedException ignored) {
+                            return;
+                        }
+                        if (!GboardLanguageDownloadGuard.shouldSkip("en-US", "src", 5L)) {
+                            allowed.incrementAndGet();
+                        }
+                        done.countDown();
+                    }
+                }).start();
+            }
+            ready.await();
+            go.countDown();
+            done.await();
+            Assert.assertEquals(1, allowed.get());
+        }
+    }
+
+    @Test
+    public void concurrentRequestsAfterTheIntervalLetExactlyOneOpenTheNextWindow()
+            throws Exception {
+        final int threads = 16;
+        for (int round = 0; round < 200; round++) {
+            GboardLanguageDownloadGuard.resetForTest();
+            Assert.assertFalse(GboardLanguageDownloadGuard.shouldSkip("en-US", "src", 0L));
+            final AtomicInteger allowed = new AtomicInteger();
+            final CountDownLatch ready = new CountDownLatch(threads);
+            final CountDownLatch go = new CountDownLatch(1);
+            final CountDownLatch done = new CountDownLatch(threads);
+            for (int i = 0; i < threads; i++) {
+                new Thread(new Runnable() {
+                    @Override public void run() {
+                        ready.countDown();
+                        try {
+                            go.await();
+                        } catch (InterruptedException ignored) {
+                            return;
+                        }
+                        if (!GboardLanguageDownloadGuard.shouldSkip("en-US", "src", INTERVAL)) {
+                            allowed.incrementAndGet();
+                        }
+                        done.countDown();
+                    }
+                }).start();
+            }
+            ready.await();
+            go.countDown();
+            done.await();
+            Assert.assertEquals(1, allowed.get());
+        }
     }
 }
