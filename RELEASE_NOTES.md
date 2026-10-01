@@ -1,7 +1,7 @@
-# PixelBoard Stable Release (v18.3.1 / Patch v1.0.4)
+# PixelBoard Stable Release (v18.3.1 / Patch v1.0.5)
 
 ## Summary
-PixelBoard v18.3.1 (Patch Bundle v1.0.4) brings the rock-solid in-line AI feature set directly to Google's latest **Gboard v18.3.1 Release** (`18.3.1.977415014-release-arm64-v8a`) along with critical idle battery optimizations for Gemini Rambler Voice Typing.
+PixelBoard v18.3.1 (Patch Bundle v1.0.5) brings the rock-solid in-line AI feature set directly to Google's latest **Gboard v18.3.1 Release** (`18.3.1.977415014-release-arm64-v8a`) along with critical idle battery optimizations for Gemini Rambler Voice Typing.
 
 ---
 
@@ -12,7 +12,11 @@ PixelBoard v18.3.1 (Patch Bundle v1.0.4) brings the rock-solid in-line AI featur
 - Fully supports arm64-v8a devices running Android 10 through Android 16 Preview.
 - Backward compatibility maintained for Gboard 18.0.3.
 
-### 2. Patch Bundle v1.0.4
+### 2. Patch Bundle v1.0.5
+- **Dictation language-download retry loop fixed (battery)**: on Gboard 18.3.1 Release, when a keyboard language (for example `en-US` next to `it-IT`) has no offline speech pack installed, Gboard requested the pack download over and over. The speech service refuses silent downloads from the renamed package but still completes the request, so each completion re-ran the eligibility check, which requested the download again, about every 6.5 ms while the keyboard was open (about 1,800 download jobs and SbG checks per opening, hundreds of `Can't silent download model` errors per second in Google TTS, roughly 15% of a CPU core). The first request for each language and source is now let through and identical repeats within 10 minutes are dropped; concurrent identical requests are decided atomically. Verified on device: 2 download jobs at start-up and none afterwards, idle CPU about 0.04%. Progress is visible in logcat under the `GboardPatches` tag (`allowed language download …` / `suppressed repeated language download …`) (credits: @PaoloDelCasale for the device logs and testing).
+- Known limitations: `GoogleAsrService` is released 20 seconds after the keyboard is hidden (a fixed grace period in stock Gboard). The advanced dictation stack still reports `NON_ELIGIBLE_NATIVE_SPLIT_UNAVAILABLE` on the 18.3.1 Release base, so Advanced Voice (Rambler) may not be active there.
+
+### 2b. Patch Bundle v1.0.4
 - Bumped patch bundle to **v1.0.4** with official bytecode mappings and compatibility for Gboard 18.3.1 Release.
 - **Rambler ASR Battery & Service Lifecycle Fix**: Eliminated background `GoogleAsrService` (`com.google.android.tts`) service binder persistence after closing the keyboard by enforcing `immediately_end_dictation_on_keyboard_hidden=true` and unforcing `enable_sticky_mic_background` (credits: @PaoloDelCasale).
 - Reverted experimental V2 prompt keyboard overrides to restore the stable in-line writing tools architecture.
@@ -37,7 +41,7 @@ PixelBoard v18.3.1 (Patch Bundle v1.0.4) brings the rock-solid in-line AI featur
 | File | Size | Description |
 | :--- | :--- | :--- |
 | **PixelBoard.apk** | ~82 MB | Ready-to-install signed Stable APK (v18.3.1 release base) |
-| **PixelBoard.mpp** | ~1.4 MB | Standalone patch bundle (v1.0.4) for Morphe Manager |
+| **PixelBoard.mpp** | ~1.4 MB | Standalone patch bundle (v1.0.5) for Morphe Manager |
 
 ---
 
