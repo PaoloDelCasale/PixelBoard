@@ -60,4 +60,17 @@ public final class GboardLanguageDownloadGuardTest {
         Assert.assertFalse(GboardLanguageDownloadGuard.shouldSkip("en-US", null, 0L));
         Assert.assertTrue(GboardLanguageDownloadGuard.shouldSkip("en-US", null, 1L));
     }
+
+    @Test
+    public void suppressionLoggingIsRateLimitedButNeverSilent() {
+        for (int count = 1; count <= 5; count++) {
+            Assert.assertTrue(GboardLanguageDownloadGuard.shouldLogSuppression(count));
+        }
+        for (int count = 6; count < 100; count++) {
+            Assert.assertFalse(GboardLanguageDownloadGuard.shouldLogSuppression(count));
+        }
+        Assert.assertTrue(GboardLanguageDownloadGuard.shouldLogSuppression(100));
+        Assert.assertFalse(GboardLanguageDownloadGuard.shouldLogSuppression(101));
+        Assert.assertTrue(GboardLanguageDownloadGuard.shouldLogSuppression(1000));
+    }
 }

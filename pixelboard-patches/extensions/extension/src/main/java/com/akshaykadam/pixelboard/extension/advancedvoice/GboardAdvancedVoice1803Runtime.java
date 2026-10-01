@@ -129,10 +129,7 @@ public final class GboardAdvancedVoice1803Runtime {
         }
         try {
             boolean skip = GboardLanguageDownloadGuard.shouldSkip(languageTag, source);
-            if (skip) {
-                logInfo("suppressed repeated language download for " + languageTag
-                        + " from " + source);
-            }
+            GboardLanguageDownloadGuard.logDecision(languageTag, source, skip);
             return skip;
         } catch (Throwable failure) {
             logError("language download guard failed", failure);

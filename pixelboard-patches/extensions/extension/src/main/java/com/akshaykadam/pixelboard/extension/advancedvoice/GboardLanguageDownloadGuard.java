@@ -1,6 +1,9 @@
 package com.akshaykadam.pixelboard.extension.advancedvoice;
 
+import android.util.Log;
+
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Back-off for Gboard's language pack download requests.
@@ -17,9 +20,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class GboardLanguageDownloadGuard {
     static final long MIN_REPEAT_INTERVAL_MS = 10L * 60L * 1000L;
+    private static final String TAG = "GboardPatches";
+    private static final int MAX_ALLOWED_LOGS = 20;
 
     private static final ConcurrentHashMap<String, Long> LAST_ALLOWED_MS =
             new ConcurrentHashMap<String, Long>();
+
+    // Dedicated counters: the runtime's shared info-log budget is exhausted at start-up by the
+    // "forced <flag>" lines, so decisions of this guard must not depend on it.
+    private static final AtomicInteger ALLOWED_COUNT = new AtomicInteger();
+    private static final AtomicInteger SUPPRESSED_COUNT = new AtomicInteger();
 
     private GboardLanguageDownloadGuard() {
     }
@@ -40,6 +50,34 @@ public final class GboardLanguageDownloadGuard {
         }
         LAST_ALLOWED_MS.put(key, Long.valueOf(nowMs));
         return false;
+    }
+
+    /** Logs the first few decisions, then every 100th suppression. Never throws. */
+    public static void logDecision(String languageTag, Object source, boolean skipped) {
+        try {
+            String prefix;
+            int count;
+            if (skipped) {
+                count = SUPPRESSED_COUNT.incrementAndGet();
+                if (!shouldLogSuppression(count)) {
+                    return;
+                }
+                prefix = "suppressed repeated language download for ";
+            } else {
+                count = ALLOWED_COUNT.incrementAndGet();
+                if (count > MAX_ALLOWED_LOGS) {
+                    return;
+                }
+                prefix = "allowed language download for ";
+            }
+            Log.i(TAG, prefix + languageTag + " from " + source + " (#" + count + ")");
+        } catch (Throwable ignored) {
+            // Logging must not affect Gboard.
+        }
+    }
+
+    static boolean shouldLogSuppression(int count) {
+        return count <= 5 || count % 100 == 0;
     }
 
     static void resetForTest() {
