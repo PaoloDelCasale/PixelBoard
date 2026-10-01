@@ -120,6 +120,27 @@ public final class GboardAdvancedVoice1803Runtime {
     }
 
     /**
+     * Called at the start of Gboard's language download queue. Returns true to drop the request
+     * (see {@link GboardLanguageDownloadGuard}).
+     */
+    public static boolean beforeLanguageDownload(String languageTag, Object source) {
+        if (!GboardAdvancedVoice1803RuntimeSettings.isEnabled()) {
+            return false;
+        }
+        try {
+            boolean skip = GboardLanguageDownloadGuard.shouldSkip(languageTag, source);
+            if (skip) {
+                logInfo("suppressed repeated language download for " + languageTag
+                        + " from " + source);
+            }
+            return skip;
+        } catch (Throwable failure) {
+            logError("language download guard failed", failure);
+            return false;
+        }
+    }
+
+    /**
      * Reconciles Gboard 18.0.3's install-time feature-split check with a fused APK.
      * The readiness bit is promoted only when the stock NativeLibHelper can really load the
      * dictation JNI library that was merged into the base APK.

@@ -5,11 +5,12 @@ import org.junit.Test;
 
 public final class GboardAdvancedVoice1803StockPolicyTest {
     @Test
-    public void fiveFormalBooleanFlagsAreEnabledWithStrictTyping() {
+    public void sixFormalBooleanFlagsAreEnabledWithStrictTyping() {
         String[] flags = new String[] {
                 GboardAdvancedVoice1803StockPolicy.ENABLE_NGA_FLAG,
                 GboardAdvancedVoice1803StockPolicy.ENABLE_ADVANCED_FEATURES_FLAG,
                 GboardAdvancedVoice1803StockPolicy.ENABLE_DICTATION_SPLIT_INSTALL_FLAG,
+                GboardAdvancedVoice1803StockPolicy.HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG,
                 GboardAdvancedVoice1803StockPolicy.IMMEDIATELY_END_DICTATION_ON_KEYBOARD_HIDDEN_FLAG,
                 GboardAdvancedVoice1803StockPolicy.ENABLE_SODA_LONGFORM_EXPERIMENT_FLAG
         };
@@ -32,15 +33,5 @@ public final class GboardAdvancedVoice1803StockPolicyTest {
                         Boolean.FALSE));
         Assert.assertFalse(GboardAdvancedVoice1803StockPolicy.isTargetFlagName(
                 GboardAdvancedVoice1803StockPolicy.ENABLE_STICKY_MIC_BACKGROUND_FLAG));
-    }
-
-    @Test
-    public void handleFallbackInsideSdStackPreservesTheStockValue() {
-        Assert.assertSame(Boolean.FALSE,
-                GboardAdvancedVoice1803StockPolicy.maybeForceStockFlag(
-                        GboardAdvancedVoice1803StockPolicy.HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG,
-                        Boolean.FALSE));
-        Assert.assertFalse(GboardAdvancedVoice1803StockPolicy.isTargetFlagName(
-                GboardAdvancedVoice1803StockPolicy.HANDLE_FALLBACK_INSIDE_SD_STACK_FLAG));
     }
 }

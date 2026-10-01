@@ -12,7 +12,7 @@ public final class GboardAdvancedVoice1803PolicyTest {
                     + "GboardAdvancedVoice1803Policy";
 
     @Test
-    public void forcesOnlyTheFiveAdvancedVoiceBooleanFlags() throws Exception {
+    public void forcesOnlyTheSixAdvancedVoiceBooleanFlags() throws Exception {
         Method maybeForceFlag = policyMethod(
                 "maybeForceFlag", String.class, Object.class);
 
@@ -20,6 +20,7 @@ public final class GboardAdvancedVoice1803PolicyTest {
                 "enable_nga",
                 "enable_advanced_features_in_consolidated_sd_stack",
                 "enable_dictation_feature_split_install",
+                "handle_fallback_inside_sd_stack",
                 "immediately_end_dictation_on_keyboard_hidden",
                 "enable_soda_longform_experiment"
         };
@@ -36,8 +37,6 @@ public final class GboardAdvancedVoice1803PolicyTest {
                 maybeForceFlag.invoke(null, "unrelated", Boolean.FALSE));
         Assert.assertEquals(Boolean.FALSE,
                 maybeForceFlag.invoke(null, "enable_sticky_mic_background", Boolean.FALSE));
-        Assert.assertEquals(Boolean.FALSE,
-                maybeForceFlag.invoke(null, "handle_fallback_inside_sd_stack", Boolean.FALSE));
         Assert.assertNull(maybeForceFlag.invoke(null, "enable_nga", null));
     }
 
