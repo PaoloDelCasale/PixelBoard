@@ -1,0 +1,2 @@
+f044cb80dc5fdcd3689afe9a38f7f0a91c2b6de197ccdd326a028426dade9f80  PixelBoard.apk
+f48b288e67573a8cdb702ef0d61eae74086bfbd8a00767ba257b5d6159a36ab5  ../patches/PixelBoard.mpp
