@@ -2,6 +2,8 @@ package com.akshaykadam.pixelboard.extension.rambler;
 
 import android.content.Context;
 
+import com.akshaykadam.pixelboard.extension.advancedvoice.GboardUnlockRestartGuard;
+
 import java.lang.reflect.Method;
 
 /**
@@ -86,6 +88,11 @@ public final class GboardRambler1803OfficialSelectionRuntime {
                 return null;
             }
             Context context = (Context) application;
+            if (!GboardUnlockRestartGuard.isUserUnlocked(context)) {
+                // Credential-encrypted preferences are not readable yet: report "unknown" and
+                // do not cache anything, so the selection is read again after the unlock.
+                return null;
+            }
             ClassLoader loader = context.getClassLoader();
 
             // 1. In 18.3.1+: check aaeo.a(Context)
@@ -150,6 +157,11 @@ public final class GboardRambler1803OfficialSelectionRuntime {
             // Application or the exact formal selector may not be ready yet.
         }
         return null;
+    }
+
+    /** Drops the cached selection so that the next query reads it again. */
+    public static void invalidateCache() {
+        officialRamblerSelected = null;
     }
 
     static void resetForTests() {

@@ -49,6 +49,7 @@ public final class GboardAdvancedVoice1803Runtime {
     }
 
     public static Object afterFlagValue(Object receiver, Object stockResult) {
+        GboardUnlockRestartGuard.ensureInstalled();
         if (!GboardAdvancedVoice1803RuntimeSettings.isEnabled()) {
             return stockResult;
         }
