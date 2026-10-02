@@ -47,6 +47,7 @@ public final class GboardUnlockRestartGuard {
     };
 
     private static volatile Runnable restartAction = KILL_PROCESS;
+    private static volatile Boolean userUnlockedOverrideForTest;
 
     private GboardUnlockRestartGuard() {
     }
@@ -68,6 +69,10 @@ public final class GboardUnlockRestartGuard {
 
     /** False only when the system reports that the current user is still locked. */
     public static boolean isUserUnlocked(Context context) {
+        Boolean override = userUnlockedOverrideForTest;
+        if (override != null) {
+            return override.booleanValue();
+        }
         try {
             if (context == null) {
                 return true;
@@ -140,6 +145,11 @@ public final class GboardUnlockRestartGuard {
         }
     }
 
+    /** Test hook: forces the answer of {@link #isUserUnlocked}; null restores the real check. */
+    public static void setUserUnlockedOverrideForTest(Boolean unlocked) {
+        userUnlockedOverrideForTest = unlocked;
+    }
+
     static void setRestartActionForTest(Runnable action) {
         restartAction = action;
     }
@@ -152,6 +162,7 @@ public final class GboardUnlockRestartGuard {
         INSTALLED.set(false);
         UNLOCK_HANDLED.set(false);
         restartAction = KILL_PROCESS;
+        userUnlockedOverrideForTest = null;
     }
 
     private static Context applicationContext(Context context) {
