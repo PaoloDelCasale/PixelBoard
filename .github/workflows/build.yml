@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   packages: read
 
 jobs:
@@ -49,19 +49,3 @@ jobs:
         with:
           name: pixelboard-patches-bundle
           path: pixelboard-patches/patches/build/libs/*.mpp
-
-      - name: Commit compiled bundle (manual runs on non-main branches only)
-        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
-        run: |
-          VERSION=$(grep -E "^version\s*=" pixelboard-patches/gradle.properties | cut -d'=' -f2 | tr -d ' ')
-          MPP="pixelboard-patches/patches/build/libs/patches-${VERSION}.mpp"
-          ls -la pixelboard-patches/patches/build/libs
-          test -f "$MPP"
-          git rm -q --ignore-unmatch patches/patches-*.mpp
-          cp "$MPP" patches/PixelBoard.mpp
-          cp "$MPP" "patches/patches-${VERSION}.mpp"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add patches/PixelBoard.mpp "patches/patches-${VERSION}.mpp"
-          git commit -m "build: compile patch bundle ${VERSION} from source (CI)"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
