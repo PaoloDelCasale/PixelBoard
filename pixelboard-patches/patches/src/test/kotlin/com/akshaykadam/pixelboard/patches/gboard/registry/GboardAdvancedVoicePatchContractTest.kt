@@ -2,6 +2,7 @@ package com.akshaykadam.pixelboard.patches.gboard.registry
 
 import com.google.gson.JsonParser
 import com.akshaykadam.pixelboard.patches.gboard.features.advancedvoice.gboardAdvancedVoice1803ZhTwPatch
+import com.akshaykadam.pixelboard.patches.gboard.features.advancedvoice.gboardAdvancedVoice1831LanguageDownloadGuardPatch
 import com.akshaykadam.pixelboard.patches.gboard.features.advancedvoice.gboardAdvancedVoiceFeatureMarkerPatch
 import com.akshaykadam.pixelboard.patches.gboard.features.advancedvoice.gboardAdvancedVoiceFlagValuePatch
 import com.akshaykadam.pixelboard.patches.gboard.features.rambler.gboardRambler1803OfficialSelectorPatch
@@ -47,6 +48,7 @@ class GboardAdvancedVoicePatchContractTest {
                 gboardAdvancedVoiceFeatureMarkerPatch,
                 gboardAdvancedVoiceFlagValuePatch,
                 gboardAdvancedVoice1803ZhTwPatch,
+                gboardAdvancedVoice1831LanguageDownloadGuardPatch,
                 gboardRambler1803OfficialSelectorPatch,
             ),
             gboardAdvancedVoiceTypingPatch.dependencies.toList(),
